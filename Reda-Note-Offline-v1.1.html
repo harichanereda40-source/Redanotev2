@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f6fa">
+  <meta name="description" content="Reda Note — ملاحظاتك ومهامك الدراسية في مكان واحد، وتعمل دون إنترنت.">
+  <title>Reda Note</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f5f6fa;
+  --surface: #ffffff;
+  --surface-2: #f0f2f8;
+  --text: #1f2433;
+  --muted: #7b8294;
+  --line: #e8eaf1;
+  --primary: #6758d8;
+  --primary-2: #877be8;
+  --primary-soft: #efedff;
+  --mint: #28a88b;
+  --mint-soft: #e6f7f2;
+  --orange: #e89a4b;
+  --orange-soft: #fff3e5;
+  --red: #dc6a73;
+  --red-soft: #fff0f1;
+  --shadow: 0 14px 40px rgba(40, 43, 72, .06);
+  --radius: 20px;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #151722;
+  --surface: #1e2230;
+  --surface-2: #272c3b;
+  --text: #edf0fa;
+  --muted: #9aa2b7;
+  --line: #303648;
+  --primary: #a59afa;
+  --primary-2: #8d80ee;
+  --primary-soft: #302b4c;
+  --mint: #5cc4a9;
+  --mint-soft: #203a36;
+  --orange: #f0b36e;
+  --orange-soft: #3e3024;
+  --red: #ed8790;
+  --red-soft: #3c292f;
+  --shadow: 0 14px 40px rgba(0, 0, 0, .16);
+}
+* { box-sizing: border-box; }
+html { min-height: 100%; scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: Tahoma, Arial, sans-serif; font-size: 14px; line-height: 1.65; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid color-mix(in srgb, var(--primary) 35%, transparent); outline-offset: 2px; }
+.app-shell { min-height: 100vh; display: flex; }
+.sidebar { width: 250px; flex: 0 0 250px; background: var(--surface); border-left: 1px solid var(--line); padding: 25px 17px 18px; display: flex; flex-direction: column; min-height: 100vh; }
+.brand { display: flex; align-items: center; gap: 11px; text-decoration: none; color: var(--text); padding: 0 8px 29px; }
+.brand-mark { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; color: #fff; font-size: 21px; font-weight: 800; background: linear-gradient(145deg, #8779eb, #5749c7); box-shadow: 0 8px 18px rgba(103,88,216,.22); direction: ltr; }
+.brand-mark span { color: #b8f1dd; }
+.brand strong { display: block; font-size: 16px; letter-spacing: -.2px; direction: ltr; text-align: right; }
+.brand small { display: block; color: var(--muted); font-size: 10px; margin-top: 1px; }
+.side-label { color: var(--muted); font-size: 10px; padding: 0 12px 9px; font-weight: 700; letter-spacing: .3px; }
+.side-nav, .subject-shortcuts { display: grid; gap: 5px; }
+.nav-link { display: flex; align-items: center; gap: 12px; border: 0; background: transparent; color: var(--muted); text-align: right; padding: 11px 12px; border-radius: 12px; width: 100%; transition: .18s ease; }
+.nav-link:hover { background: var(--surface-2); color: var(--text); }
+.nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 700; }
+.nav-icon { width: 21px; text-align: center; font-size: 18px; line-height: 1; }
+.nav-count { margin-right: auto; font-size: 10px; color: var(--muted); background: var(--surface-2); border-radius: 20px; min-width: 21px; padding: 1px 6px; text-align: center; }
+.subject-label { margin-top: 27px; }
+.subject-link { padding: 8px 12px; font-size: 12px; }
+.subject-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--primary)); }
+.sidebar-bottom { margin-top: auto; }
+.offline-pill { display: flex; align-items: center; gap: 8px; padding: 9px 11px; background: var(--mint-soft); color: var(--mint); border-radius: 10px; font-size: 10px; margin: 18px 3px 15px; }
+.offline-pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px color-mix(in srgb, var(--mint) 15%, transparent); }
+.sidebar-foot { color: var(--muted); font-size: 10px; text-align: center; padding: 18px 5px 0; }
+.main-area { min-width: 0; flex: 1; padding: 0 38px 44px; max-width: 1600px; margin: 0 auto; }
+.topbar { height: 78px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); margin-bottom: 31px; }
+.breadcrumb { color: var(--muted); font-size: 12px; }
+.breadcrumb span { margin: 0 7px; opacity: .55; }
+.top-actions { display: flex; align-items: center; gap: 12px; }
+.today-label { color: var(--muted); font-size: 11px; }
+.icon-button, .avatar { border: 1px solid var(--line); background: var(--surface); color: var(--text); width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; }
+.icon-button { font-size: 19px; }
+.avatar { border: 0; color: #fff; background: linear-gradient(140deg, #8779eb, #5749c7); font-weight: 800; }
+.mobile-brand, .mobile-nav { display: none; }
+.page { display: none; animation: fade .2s ease; }
+.page.active { display: block; }
+@keyframes fade { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 15px; margin-bottom: 25px; }
+.eyebrow { color: var(--primary); font-size: 10px; font-weight: 800; margin-bottom: 4px; }
+h1, h2, h3, p { margin-top: 0; }
+h1 { font-size: clamp(22px, 3vw, 29px); line-height: 1.35; margin-bottom: 5px; letter-spacing: -.5px; }
+.page-heading p, .muted-copy { color: var(--muted); margin-bottom: 0; font-size: 12px; }
+.btn { border: 0; border-radius: 12px; padding: 10px 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--primary); color: white; font-weight: 700; font-size: 12px; transition: .18s ease; box-shadow: 0 6px 15px color-mix(in srgb, var(--primary) 18%, transparent); }
+.btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
+.btn.secondary { background: var(--surface-2); color: var(--text); box-shadow: none; }
+.btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); box-shadow: none; }
+.btn.danger { background: var(--red-soft); color: var(--red); box-shadow: none; }
+.btn.small { padding: 7px 11px; font-size: 11px; }
+.fab { display: none; }
+.home-hero { display: grid; grid-template-columns: 1.4fr .8fr; gap: 17px; margin-bottom: 19px; }
+.welcome-card { border-radius: 24px; padding: 27px 29px; color: white; background: radial-gradient(circle at 8% 10%, rgba(255,255,255,.19), transparent 24%), linear-gradient(120deg, #6356d2, #877be7); position: relative; overflow: hidden; min-height: 190px; }
+.welcome-card:after { content: ""; position: absolute; width: 180px; height: 180px; border: 1px solid rgba(255,255,255,.16); border-radius: 50%; left: -36px; bottom: -112px; box-shadow: 0 0 0 22px rgba(255,255,255,.035), 0 0 0 47px rgba(255,255,255,.025); }
+.welcome-card .eyebrow { color: #d7d2ff; }
+.welcome-card h1 { font-size: 25px; margin: 8px 0; }
+.welcome-card p { color: rgba(255,255,255,.8); font-size: 12px; margin-bottom: 20px; }
+.welcome-card .btn { background: white; color: #6153ce; box-shadow: none; }
+.progress-card { padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; display: flex; align-items: center; gap: 18px; }
+.progress-ring { --progress: 0; width: 94px; height: 94px; flex: 0 0 94px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--mint) calc(var(--progress) * 1%), var(--surface-2) 0); position: relative; }
+.progress-ring:before { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--surface); }
+.progress-ring strong { position: relative; font-size: 20px; direction: ltr; }
+.progress-info h3 { font-size: 13px; margin: 0 0 4px; }
+.progress-info p { color: var(--muted); font-size: 11px; margin: 0; }
+.progress-info .small-stat { color: var(--mint); font-weight: 700; margin-top: 9px; }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-bottom: 24px; }
+.stat-card { background: var(--surface); border: 1px solid var(--line); border-radius: 17px; padding: 15px 17px; display: flex; align-items: center; gap: 12px; }
+.stat-icon { width: 37px; height: 37px; border-radius: 12px; display: grid; place-items: center; font-size: 17px; background: var(--primary-soft); color: var(--primary); }
+.stat-card:nth-child(2) .stat-icon { background: var(--orange-soft); color: var(--orange); }
+.stat-card:nth-child(3) .stat-icon { background: var(--mint-soft); color: var(--mint); }
+.stat-card strong { display: block; font-size: 19px; line-height: 1.25; }
+.stat-card small { color: var(--muted); font-size: 10px; }
+.section-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 24px 0 12px; }
+.section-head h2 { font-size: 15px; margin: 0; }
+.text-link { border: 0; background: none; color: var(--primary); font-size: 11px; font-weight: 700; padding: 5px; }
+.content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 19px; padding: 18px; min-width: 0; }
+.panel-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.panel-title h3 { margin: 0; font-size: 13px; }
+.panel-title span { color: var(--muted); font-size: 10px; }
+.note-mini, .task-row { display: flex; align-items: flex-start; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.note-mini:last-child, .task-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.note-mini:first-child, .task-row:first-child { padding-top: 3px; }
+.note-mini-body, .task-body { min-width: 0; flex: 1; }
+.note-mini h4, .task-body h4 { margin: 0 0 3px; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note-mini p { margin: 0; color: var(--muted); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note-symbol { width: 32px; height: 32px; border-radius: 10px; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; flex: 0 0 32px; }
+.task-check { appearance: none; width: 18px; height: 18px; flex: 0 0 18px; border: 1.5px solid #c9ccda; border-radius: 6px; margin: 1px 0 0; display: grid; place-items: center; background: transparent; cursor: pointer; }
+.task-check:checked { background: var(--mint); border-color: var(--mint); }
+.task-check:checked:after { content: "✓"; color: #fff; font-size: 12px; font-weight: 800; }
+.task-body h4.done { text-decoration: line-through; color: var(--muted); }
+.task-row .task-body h4 { white-space: normal; overflow-wrap: anywhere; word-break: break-word; line-height: 1.6; }
+.task-meta { color: var(--muted); font-size: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+.due-badge { border-radius: 20px; padding: 2px 7px; font-size: 9px; white-space: nowrap; background: var(--surface-2); color: var(--muted); }
+.due-badge.late { background: var(--red-soft); color: var(--red); }
+.due-badge.today { background: var(--orange-soft); color: var(--orange); }
+.subject-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.subject-card { border: 1px solid var(--line); background: var(--surface); border-radius: 17px; padding: 16px 12px; text-align: right; color: var(--text); transition: .18s ease; min-width: 0; }
+.subject-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--primary) 50%, var(--line)); box-shadow: var(--shadow); }
+.subject-emoji { width: 36px; height: 36px; border-radius: 12px; background: var(--subject-bg, var(--primary-soft)); display: grid; place-items: center; margin-bottom: 12px; font-size: 17px; }
+.subject-card strong { display: block; font-size: 12px; }
+.subject-card small { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; }
+.focus-card { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 17px; padding: 15px 18px; margin-top: 16px; }
+.focus-copy { display: flex; align-items: center; gap: 11px; }
+.focus-copy .focus-icon { width: 37px; height: 37px; border-radius: 12px; background: var(--orange-soft); display: grid; place-items: center; font-size: 18px; }
+.focus-copy strong { display: block; font-size: 12px; }
+.focus-copy small { color: var(--muted); font-size: 10px; }
+.timer-display { font-size: 20px; font-weight: 800; direction: ltr; letter-spacing: 1px; margin-left: 5px; font-variant-numeric: tabular-nums; }
+.focus-actions { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.focus-copy small { display: block; line-height: 1.5; }
+.searchbar { display: flex; align-items: center; gap: 9px; background: var(--surface); border: 1px solid var(--line); border-radius: 13px; padding: 0 13px; min-width: 210px; }
+.searchbar span { color: var(--muted); font-size: 17px; }
+.searchbar input { border: 0; outline: 0; background: transparent; color: var(--text); padding: 10px 0; width: 100%; min-width: 0; font-size: 12px; }
+.toolbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 15px; }
+.filter-chips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.chip { background: var(--surface); border: 1px solid var(--line); color: var(--muted); border-radius: 30px; padding: 7px 12px; font-size: 10px; }
+.chip.active { background: var(--primary-soft); border-color: transparent; color: var(--primary); font-weight: 700; }
+.notes-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 13px; }
+.note-card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 17px; padding: 16px; min-height: 166px; display: flex; flex-direction: column; transition: .15s ease; }
+.note-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.note-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+.note-tag { display: inline-flex; border-radius: 20px; background: var(--primary-soft); color: var(--primary); padding: 3px 8px; font-size: 9px; }
+.pin { color: var(--orange); font-size: 13px; }
+.note-card h3 { font-size: 13px; margin: 0 0 7px; overflow-wrap: anywhere; }
+.note-card p { color: var(--muted); font-size: 11px; margin: 0; white-space: pre-wrap; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
+.note-reader-modal { width: min(760px, 100%); }
+.note-reader-meta { color: var(--muted); font-size: 11px; margin: -8px 0 15px; }
+.note-reader-body { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; max-height: 62vh; overflow-y: auto; padding: 16px; border-radius: 13px; border: 1px solid var(--line); background: var(--bg); line-height: 1.95; font-size: 13px; }
+.note-reader-empty { color: var(--muted); }
+.note-card-footer { margin-top: auto; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 9px; }
+.card-actions { display: flex; gap: 5px; }
+.mini-action { border: 0; background: var(--surface-2); color: var(--muted); width: 25px; height: 25px; border-radius: 8px; }
+.mini-action:hover { color: var(--primary); }
+.task-summary { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 13px 16px; display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+.task-summary strong { font-size: 19px; }
+.task-summary span { color: var(--muted); font-size: 10px; }
+.task-progress { height: 6px; border-radius: 20px; background: var(--surface-2); overflow: hidden; flex: 1; }
+.task-progress i { display: block; height: 100%; background: var(--mint); border-radius: inherit; }
+.tasks-list { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 4px 17px; }
+.task-item { display: flex; align-items: flex-start; gap: 10px; padding: 13px 2px; border-bottom: 1px solid var(--line); min-width: 0; }
+.task-item:last-child { border-bottom: 0; }
+.task-item .task-body { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; min-width: 0; flex: 1 1 auto; }
+.task-details { min-width: 0; flex: 1 1 0; overflow-wrap: anywhere; }
+.task-details h4 { margin: 0 0 4px; font-size: 12px; white-space: normal; overflow-wrap: anywhere; word-break: break-word; line-height: 1.65; }
+.task-details small { display: block; color: var(--muted); font-size: 10px; white-space: normal; overflow-wrap: anywhere; word-break: break-word; line-height: 1.55; }
+.task-item-actions { display: flex; gap: 5px; opacity: .72; flex: 0 0 auto; }
+.task-item-actions button { width: 28px; height: 28px; }
+.empty-state { text-align: center; padding: 45px 16px; background: var(--surface); border: 1px dashed var(--line); border-radius: 17px; }
+.empty-state .empty-icon { width: 50px; height: 50px; border-radius: 16px; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; margin: 0 auto 12px; font-size: 22px; }
+.empty-state h3 { margin: 0 0 5px; font-size: 13px; }
+.empty-state p { color: var(--muted); font-size: 11px; margin: 0 0 15px; }
+.subject-hero { display: flex; align-items: center; gap: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 19px; padding: 20px; margin-bottom: 18px; }
+.subject-hero .subject-emoji { width: 53px; height: 53px; font-size: 23px; margin: 0; }
+.subject-hero h1 { margin: 0 0 2px; font-size: 21px; }
+.subject-hero p { margin: 0; color: var(--muted); font-size: 11px; }
+.subject-hero-actions { margin-right: auto; display: flex; gap: 7px; flex-wrap: wrap; }
+.subject-content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.subject-content-grid .panel { min-height: 230px; }
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.setting-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+.setting-card h3 { margin: 0 0 5px; font-size: 14px; }
+.setting-card p { color: var(--muted); font-size: 11px; margin: 0 0 15px; }
+.setting-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.setting-note { background: var(--primary-soft); color: var(--primary); font-size: 10px; border-radius: 12px; padding: 12px; margin-top: 15px; }
+.danger-zone { border-color: color-mix(in srgb, var(--red) 35%, var(--line)); }
+.about-row { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.about-row:last-child { border: 0; }
+.modal-backdrop { position: fixed; inset: 0; z-index: 20; background: rgba(13, 16, 29, .48); display: grid; place-items: center; padding: 15px; backdrop-filter: blur(4px); }
+.modal { width: min(530px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 21px; box-shadow: 0 24px 90px rgba(0,0,0,.25); padding: 22px; max-height: 90vh; overflow-y: auto; animation: fade .18s ease; }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 17px; }
+.modal-head h2 { margin: 0; font-size: 17px; }
+.modal-close { border: 0; width: 31px; height: 31px; border-radius: 10px; background: var(--surface-2); color: var(--muted); font-size: 17px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: grid; gap: 5px; margin-bottom: 12px; }
+.field.full { grid-column: 1 / -1; }
+.field label { color: var(--muted); font-size: 10px; font-weight: 700; }
+.field input, .field textarea, .field select { border: 1px solid var(--line); background: var(--bg); color: var(--text); border-radius: 11px; padding: 10px 11px; outline: 0; width: 100%; font-size: 12px; }
+.field textarea { min-height: 130px; resize: vertical; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--primary); }
+.form-check { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; margin: 3px 0 13px; }
+.form-check input { accent-color: var(--primary); }
+.modal-actions { display: flex; justify-content: flex-start; gap: 8px; margin-top: 16px; }
+.toast { position: fixed; left: 22px; bottom: 22px; z-index: 50; background: var(--text); color: var(--surface); padding: 11px 16px; border-radius: 12px; font-size: 11px; box-shadow: var(--shadow); opacity: 0; transform: translateY(10px); pointer-events: none; transition: .2s ease; }
+.toast.show { opacity: 1; transform: none; }
+.mobile-only { display: none; }
+@media (max-width: 1100px) { .main-area { padding: 0 25px 40px; } .subject-grid { grid-template-columns: repeat(3, 1fr); } .notes-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 800px) { .sidebar { width: 220px; flex-basis: 220px; } .main-area { padding-inline: 20px; } .home-hero { grid-template-columns: 1fr; } .progress-card { min-height: 130px; } .subject-content-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .app-shell { display: block; } .sidebar { display: none; } .main-area { padding: 0 15px calc(96px + env(safe-area-inset-bottom)); }
+  .topbar { height: 63px; margin-bottom: 23px; }
+  .mobile-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; direction: ltr; }
+  .mobile-brand .brand-mark { width: 31px; height: 31px; font-size: 16px; border-radius: 10px; }
+  .breadcrumb { display: none; } .top-actions { gap: 7px; } .today-label { display: none; } .icon-button, .avatar { width: 33px; height: 33px; border-radius: 10px; }
+  .page-heading { align-items: flex-start; margin-bottom: 17px; } .page-heading .btn { display: none; }
+  h1 { font-size: 23px; } .page-heading p { font-size: 11px; }
+  .welcome-card { padding: 22px; min-height: 182px; } .welcome-card h1 { font-size: 23px; }
+  .progress-card { padding: 17px; } .progress-ring { width: 80px; height: 80px; flex-basis: 80px; }
+  .stats-grid { gap: 8px; margin-bottom: 19px; } .stat-card { padding: 11px 9px; gap: 8px; border-radius: 14px; } .stat-icon { width: 30px; height: 30px; border-radius: 9px; font-size: 14px; } .stat-card strong { font-size: 16px; } .stat-card small { font-size: 9px; }
+  .content-grid { grid-template-columns: 1fr; } .panel { padding: 15px; }
+  .subject-grid { grid-template-columns: repeat(2, 1fr); gap: 9px; } .subject-card { padding: 13px; }
+  .focus-card { padding: 12px; flex-wrap: wrap; } .focus-card .btn { margin-right: auto; }
+  .notes-grid { grid-template-columns: 1fr; } .note-card { min-height: 145px; }
+  .toolbar { align-items: stretch; } .searchbar { width: 100%; } .filter-chips { width: 100%; }
+  .task-summary { padding: 11px; gap: 9px; } .task-summary strong { font-size: 16px; }
+  .task-item .task-body { align-items: flex-start; flex-direction: column; gap: 6px; } .task-details { width: 100%; } .task-item-actions { opacity: 1; align-self: flex-end; }
+  .subject-hero { align-items: flex-start; flex-wrap: wrap; padding: 15px; } .subject-hero-actions { width: 100%; margin-right: 0; } .subject-hero .subject-emoji { width: 44px; height: 44px; }
+  .settings-grid { grid-template-columns: 1fr; }
+  .fab { display: grid; place-items: center; position: fixed; z-index: 8; bottom: calc(81px + env(safe-area-inset-bottom)); left: 18px; width: 52px; height: 52px; border: 0; border-radius: 18px; background: var(--primary); color: white; font-size: 28px; box-shadow: 0 10px 25px color-mix(in srgb, var(--primary) 35%, transparent); }
+  .mobile-nav { display: flex; position: fixed; z-index: 9; bottom: 0; right: 0; left: 0; padding: 8px 8px calc(7px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(16px); border-top: 1px solid var(--line); justify-content: space-around; }
+  .mobile-nav-link { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0; border: 0; background: none; color: var(--muted); }
+  .mobile-nav-link span { font-size: 19px; line-height: 1.2; } .mobile-nav-link small { font-size: 9px; }
+  .mobile-nav-link.active { color: var(--primary); font-weight: 700; }
+  .modal { padding: 18px; border-radius: 18px; } .form-grid { grid-template-columns: 1fr; gap: 0; } .field.full { grid-column: auto; }
+  .toast { left: 12px; right: 12px; bottom: calc(78px + env(safe-area-inset-bottom)); text-align: center; }
+}
+
+.field-select { border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 11px; padding: 9px 11px; font-size: 11px; min-width: 135px; outline: 0; }
+.field-select:focus { border-color: var(--primary); }
+
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="القائمة الرئيسية">
+      <a class="brand" href="#home" data-nav="home" aria-label="Reda Note - الرئيسية">
+        <span class="brand-mark">R<span>.</span></span>
+        <span><strong>Reda Note</strong><small>مساحتك الهادئة للإنجاز</small></span>
+      </a>
+      <div class="side-label">المساحة الشخصية</div>
+      <nav class="side-nav">
+        <button class="nav-link active" data-nav="home"><span class="nav-icon">⌂</span> الرئيسية</button>
+        <button class="nav-link" data-nav="notes"><span class="nav-icon">▤</span> الملاحظات <span id="notesCount" class="nav-count">0</span></button>
+        <button class="nav-link" data-nav="tasks"><span class="nav-icon">✓</span> قائمة المهام <span id="tasksCount" class="nav-count">0</span></button>
+        <button class="nav-link" data-nav="subjects"><span class="nav-icon">▦</span> موادي الدراسية</button>
+      </nav>
+      <div class="side-label subject-label">اختصارات المواد</div>
+      <div id="sidebarSubjects" class="subject-shortcuts"></div>
+      <div class="sidebar-bottom">
+        <div class="offline-pill"><i></i> يعمل محلياً دون إنترنت</div>
+        <button class="nav-link" data-nav="settings"><span class="nav-icon">⚙</span> الإعدادات</button>
+        <div class="sidebar-foot">صُمّم للدراسة بهدوء، خطوة بخطوة.</div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">R<span>.</span></span><strong>Reda Note</strong></div>
+        <div class="breadcrumb" id="breadcrumb">مساحتك الشخصية <span>/</span> الرئيسية</div>
+        <div class="top-actions">
+          <span class="today-label" id="todayLabel"></span>
+          <button class="icon-button" id="themeToggle" title="تبديل الوضع الليلي" aria-label="تبديل الوضع الليلي">☾</button>
+          <button class="avatar" title="مساحتك">R</button>
+        </div>
+      </header>
+
+      <section id="page-home" class="page active"></section>
+      <section id="page-notes" class="page"></section>
+      <section id="page-tasks" class="page"></section>
+      <section id="page-subjects" class="page"></section>
+      <section id="page-subject" class="page"></section>
+      <section id="page-settings" class="page"></section>
+
+      <button class="fab" id="quickAdd" aria-label="إضافة سريعة" title="إضافة سريعة">＋</button>
+      <nav class="mobile-nav" aria-label="التنقل">
+        <button class="mobile-nav-link active" data-nav="home"><span>⌂</span><small>الرئيسية</small></button>
+        <button class="mobile-nav-link" data-nav="notes"><span>▤</span><small>ملاحظات</small></button>
+        <button class="mobile-nav-link" data-nav="tasks"><span>✓</span><small>المهام</small></button>
+        <button class="mobile-nav-link" data-nav="subjects"><span>▦</span><small>المواد</small></button>
+        <button class="mobile-nav-link" data-nav="settings"><span>⚙</span><small>إعدادات</small></button>
+      </nav>
+    </main>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+(() => {
+  'use strict';
+
+  const STORAGE_KEY = 'reda-note-data-v1';
+  const THEME_KEY = 'reda-note-theme';
+  const FOCUS_SETTINGS_KEY = 'reda-note-focus-settings-v1';
+  const FOCUS_COUNT_KEY = 'reda-note-focus-completed-v1';
+  const DEFAULT_FOCUS_SETTINGS = { focusMinutes: 25, breakMinutes: 5, notifyOnFinish: true };
+  const SUBJECTS = [
+    { id: 'math', name: 'رياضيات', short: 'رياضيات', icon: '∑', color: '#eeeaff' },
+    { id: 'physics', name: 'فيزياء', short: 'فيزياء', icon: '⚡', color: '#fff1df' },
+    { id: 'science', name: 'علوم طبيعية', short: 'علوم', icon: '🧬', color: '#e5f7f0' },
+    { id: 'arabic', name: 'لغة عربية', short: 'عربية', icon: 'أ', color: '#fceaf0' },
+    { id: 'english', name: 'إنجليزية', short: 'إنجليزية', icon: 'EN', color: '#e8f2ff' },
+    { id: 'french', name: 'فرنسية', short: 'فرنسية', icon: 'FR', color: '#e9edff' },
+    { id: 'history', name: 'تاريخ', short: 'تاريخ', icon: '⌛', color: '#fff0e5' },
+    { id: 'geography', name: 'جغرافيا', short: 'جغرافيا', icon: '🌍', color: '#e5f6ed' },
+    { id: 'philosophy', name: 'فلسفة', short: 'فلسفة', icon: '💭', color: '#f0eaff' },
+    { id: 'islamic', name: 'علوم إسلامية', short: 'إسلامية', icon: '☾', color: '#e7f4f0' }
+  ];
+  const NOTE_CATEGORIES = ['درس', 'ملخص', 'فكرة', 'مراجعة', 'أخرى'];
+  const PRIORITIES = { high: 'مهمة', medium: 'عادية', low: 'منخفضة' };
+  const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
+
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const uid = () => (crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+  const todayISO = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+  const safeDate = value => {
+    if (!value) return null;
+    const [y, m, d] = value.split('-').map(Number);
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d);
+  };
+  const formatDate = value => {
+    if (!value) return 'بلا تاريخ';
+    const date = safeDate(value);
+    return date ? new Intl.DateTimeFormat('ar-DZ', { day: 'numeric', month: 'short' }).format(date) : 'تاريخ غير صالح';
+  };
+  const formatLongDate = date => new Intl.DateTimeFormat('ar-DZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+  const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+  const subjectFor = id => SUBJECTS.find(subject => subject.id === id);
+  const subjectName = id => subjectFor(id)?.name || 'عام';
+  const dateSort = value => value || '9999-12-31';
+
+  function freshState() {
+    return { version: 1, notes: [], tasks: [], createdAt: new Date().toISOString() };
+  }
+  function loadState() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (parsed && Array.isArray(parsed.notes) && Array.isArray(parsed.tasks)) {
+        return {
+          version: 1,
+          notes: parsed.notes.filter(item => item && typeof item === 'object'),
+          tasks: parsed.tasks.filter(item => item && typeof item === 'object'),
+          createdAt: parsed.createdAt || new Date().toISOString()
+        };
+      }
+    } catch (error) { console.warn('تعذر تحميل البيانات المحلية', error); }
+    return freshState();
+  }
+  let state = loadState();
+  let currentPage = 'home';
+  let currentSubject = null;
+  let notesQuery = '';
+  let notesSubjectFilter = 'all';
+  let notesCategoryFilter = 'all';
+  let taskFilter = 'all';
+  let taskSubjectFilter = 'all';
+  let toastTimer = null;
+  function loadFocusSettings() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(FOCUS_SETTINGS_KEY) || 'null');
+      return {
+        focusMinutes: Math.min(120, Math.max(1, Number(saved?.focusMinutes) || DEFAULT_FOCUS_SETTINGS.focusMinutes)),
+        breakMinutes: Math.min(30, Math.max(1, Number(saved?.breakMinutes) || DEFAULT_FOCUS_SETTINGS.breakMinutes)),
+        notifyOnFinish: saved?.notifyOnFinish !== false
+      };
+    } catch (_) { return { ...DEFAULT_FOCUS_SETTINGS }; }
+  }
+  let focusSettings = loadFocusSettings();
+  let focusInterval = null;
+  let focusSeconds = focusSettings.focusMinutes * 60;
+  let focusEndsAt = 0;
+  let focusRunning = false;
+
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      updateSidebarCounts();
+    } catch (error) {
+      showToast('مساحة التخزين ممتلئة. صدّر نسخة احتياطية ثم احذف بعض البيانات.');
+      console.error(error);
+    }
+  }
+  function showToast(message) {
+    const toast = $('#toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+  window.__redaNativeMessage = message => {
+    showToast(String(message || ''));
+    if (focusRunning && focusSettings.notifyOnFinish && window.RedaAndroid?.scheduleFocusNotification && window.RedaAndroid?.hasNotificationPermission()) {
+      window.RedaAndroid.scheduleFocusNotification(Math.max(1000, focusEndsAt - Date.now()));
+    }
+  };
+  function getFocusCount() {
+    try { return Number(localStorage.getItem(FOCUS_COUNT_KEY) || 0); } catch (_) { return 0; }
+  }
+  function updateSidebarCounts() {
+    $('#notesCount').textContent = state.notes.length;
+    $('#tasksCount').textContent = state.tasks.filter(task => !task.done).length;
+  }
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem(THEME_KEY, theme);
+    $('#themeToggle').textContent = theme === 'dark' ? '☀' : '☾';
+    $('#themeToggle').title = theme === 'dark' ? 'تفعيل الوضع النهاري' : 'تفعيل الوضع الليلي';
+  }
+  function initTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    const preferred = window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    applyTheme(saved || preferred);
+  }
+
+  function renderSidebarSubjects() {
+    $('#sidebarSubjects').innerHTML = SUBJECTS.map(subject => `
+      <button class="nav-link subject-link" data-open-subject="${subject.id}">
+        <span class="subject-dot" style="--dot:${subject.color}"></span>${subject.name}
+      </button>`).join('');
+  }
+  function setPage(page, subjectId = null) {
+    currentPage = page;
+    if (page === 'subject') currentSubject = subjectFor(subjectId) ? subjectId : 'math';
+    $$('.page').forEach(section => section.classList.toggle('active', section.id === `page-${page}`));
+    $$('.nav-link[data-nav], .mobile-nav-link[data-nav]').forEach(button => button.classList.toggle('active', button.dataset.nav === page || (page === 'subject' && button.dataset.nav === 'subjects')));
+    const labels = { home: 'الرئيسية', notes: 'الملاحظات', tasks: 'قائمة المهام', subjects: 'موادي الدراسية', settings: 'الإعدادات', subject: subjectName(currentSubject) };
+    $('#breadcrumb').innerHTML = `مساحتك الشخصية <span>/</span> ${escapeHTML(labels[page] || 'الرئيسية')}`;
+    renderCurrentPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function renderCurrentPage() {
+    if (currentPage === 'home') renderHome();
+    if (currentPage === 'notes') renderNotes();
+    if (currentPage === 'tasks') renderTasks();
+    if (currentPage === 'subjects') renderSubjects();
+    if (currentPage === 'subject') renderSubjectPage();
+    if (currentPage === 'settings') renderSettings();
+    updateSidebarCounts();
+  }
+  function pageHeading(eyebrow, title, description, action = '') {
+    return `<div class="page-heading"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p>${description}</p></div>${action}</div>`;
+  }
+  function emptyState(icon, title, description, action = '') {
+    return `<div class="empty-state"><div class="empty-icon">${icon}</div><h3>${title}</h3><p>${description}</p>${action}</div>`;
+  }
+  function dueInfo(task) {
+    if (!task.dueDate) return '<span class="due-badge">بلا موعد</span>';
+    const today = todayISO();
+    if (task.dueDate < today && !task.done) return `<span class="due-badge late">متأخرة · ${formatDate(task.dueDate)}</span>`;
+    if (task.dueDate === today && !task.done) return '<span class="due-badge today">اليوم</span>';
+    return `<span class="due-badge">${formatDate(task.dueDate)}</span>`;
+  }
+  function sortedNotes(notes) {
+    return [...notes].sort((a, b) => Number(!!b.pinned) - Number(!!a.pinned) || (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+  }
+  function sortedTasks(tasks) {
+    return [...tasks].sort((a, b) => Number(!!a.done) - Number(!!b.done) || dateSort(a.dueDate).localeCompare(dateSort(b.dueDate)) || (PRIORITY_ORDER[a.priority] ?? 1) - (PRIORITY_ORDER[b.priority] ?? 1));
+  }
+  function noteMini(note) {
+    return `<div class="note-mini"><div class="note-symbol">▤</div><div class="note-mini-body"><h4>${escapeHTML(note.title || 'ملاحظة بلا عنوان')}</h4><p>${escapeHTML((note.body || '').slice(0, 100))}</p></div><button class="mini-action" data-action="view-note" data-id="${escapeHTML(note.id)}" title="قراءة كاملة">◉</button></div>`;
+  }
+  function taskRow(task) {
+    return `<div class="task-row"><input class="task-check" type="checkbox" data-action="toggle-task" data-id="${escapeHTML(task.id)}" ${task.done ? 'checked' : ''} aria-label="إنجاز المهمة"><div class="task-body"><h4 class="${task.done ? 'done' : ''}">${escapeHTML(task.title)}</h4><div class="task-meta"><span>${escapeHTML(subjectName(task.subject))}</span>${dueInfo(task)}</div></div></div>`;
+  }
+  function renderHome() {
+    const today = todayISO();
+    const todayTasks = state.tasks.filter(task => task.dueDate === today);
+    const doneToday = todayTasks.filter(task => task.done).length;
+    const percent = todayTasks.length ? Math.round(doneToday / todayTasks.length * 100) : 0;
+    const pending = state.tasks.filter(task => !task.done);
+    const lateCount = pending.filter(task => task.dueDate && task.dueDate < today).length;
+    const upcoming = sortedTasks(pending.filter(task => !task.dueDate || task.dueDate >= today)).slice(0, 4);
+    const recent = sortedNotes(state.notes).slice(0, 3);
+    const subjectCards = SUBJECTS.map(subject => {
+      const n = state.notes.filter(note => note.subject === subject.id).length;
+      const t = state.tasks.filter(task => task.subject === subject.id && !task.done).length;
+      return `<button class="subject-card" data-open-subject="${subject.id}" style="--subject-bg:${subject.color}"><span class="subject-emoji">${subject.icon}</span><strong>${subject.name}</strong><small>${n} ملاحظات · ${t} مهام</small></button>`;
+    }).join('');
+    $('#page-home').innerHTML = `
+      <div class="home-hero">
+        <div class="welcome-card"><div class="eyebrow">أهلاً بك في مساحتك</div><h1>خطوة صغيرة اليوم،<br>تقدّم كبير غداً.</h1><p>رتّب أفكارك، تابع مهامك، وركّز على ما يستحق وقتك.</p><button class="btn" data-nav="tasks">ابدأ بمهامك <span>←</span></button></div>
+        <div class="progress-card"><div class="progress-ring" style="--progress:${percent}"><strong>${percent}%</strong></div><div class="progress-info"><h3>إنجاز مهام اليوم</h3><p>${doneToday} من ${todayTasks.length} مهام مستحقة اليوم</p><div class="small-stat">${todayTasks.length ? (percent === 100 ? 'أحسنت! أكملت مهام اليوم 🎉' : 'استمر على نفس الوتيرة') : 'أضف مهمة بتاريخ اليوم للمتابعة'}</div></div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">▤</div><div><strong>${state.notes.length}</strong><small>ملاحظة محفوظة</small></div></div>
+        <div class="stat-card"><div class="stat-icon">◷</div><div><strong>${pending.length}</strong><small>مهمة غير منجزة</small></div></div>
+        <div class="stat-card"><div class="stat-icon">!</div><div><strong>${lateCount}</strong><small>مهمة متأخرة</small></div></div>
+      </div>
+      <div class="section-head"><h2>موادك الدراسية</h2><button class="text-link" data-nav="subjects">عرض الكل ←</button></div>
+      <div class="subject-grid">${subjectCards}</div>
+      <div class="section-head"><h2>لمحة سريعة</h2><span class="muted-copy">لا تحتاج إلى إنجاز كل شيء دفعة واحدة</span></div>
+      <div class="content-grid">
+        <div class="panel"><div class="panel-title"><h3>المهام القادمة</h3><button class="text-link" data-nav="tasks">كل المهام ←</button></div>${upcoming.length ? upcoming.map(taskRow).join('') : emptyState('✓', 'لا توجد مهام قادمة', 'أضف مهمة صغيرة لتبدأ.')}</div>
+        <div class="panel"><div class="panel-title"><h3>آخر الملاحظات</h3><button class="text-link" data-nav="notes">كل الملاحظات ←</button></div>${recent.length ? recent.map(noteMini).join('') : emptyState('▤', 'مساحتك جاهزة', 'أضف أول ملاحظة تحتفظ بها.')}</div>
+      </div>
+      <div class="focus-card"><div class="focus-copy"><div class="focus-icon">◴</div><div><strong>جلسة تركيز هادئة</strong><small id="focusSubtitle">${focusSettings.focusMinutes} دقيقة تركيز · ${focusSettings.breakMinutes} دقائق استراحة</small><small id="focusCount">جلسات مكتملة: ${getFocusCount()}</small></div></div><div class="timer-display" id="focusTimer">${timerText()}</div><div class="focus-actions"><button class="btn secondary small" id="focusToggle">${focusRunning ? 'إيقاف مؤقت' : (focusSeconds < focusSettings.focusMinutes * 60 && focusSeconds > 0 ? 'استئناف' : 'ابدأ التركيز')}</button><button class="btn ghost small" id="focusReset">إعادة</button><button class="btn ghost small" id="focusSettingsOpen" title="تخصيص الجلسة">⚙</button></div></div>`;
+  }
+
+  function renderNotes() {
+    let notes = sortedNotes(state.notes);
+    if (notesSubjectFilter !== 'all') notes = notes.filter(note => note.subject === notesSubjectFilter);
+    if (notesCategoryFilter !== 'all') notes = notes.filter(note => note.category === notesCategoryFilter);
+    if (notesQuery.trim()) {
+      const query = notesQuery.trim().toLocaleLowerCase('ar');
+      notes = notes.filter(note => `${note.title} ${note.body} ${subjectName(note.subject)} ${note.category}`.toLocaleLowerCase('ar').includes(query));
+    }
+    const subjectOptions = `<option value="all">كل المواد</option>${SUBJECTS.map(subject => `<option value="${subject.id}" ${notesSubjectFilter === subject.id ? 'selected' : ''}>${subject.name}</option>`).join('')}`;
+    const categoryOptions = `<option value="all">كل التصنيفات</option>${NOTE_CATEGORIES.map(category => `<option value="${category}" ${notesCategoryFilter === category ? 'selected' : ''}>${category}</option>`).join('')}`;
+    const cards = notes.map(note => `<article class="note-card"><div class="note-card-top"><span class="note-tag">${escapeHTML(note.category || 'أخرى')} · ${escapeHTML(subjectName(note.subject))}</span>${note.pinned ? '<span class="pin" title="مثبتة">◆</span>' : ''}</div><h3>${escapeHTML(note.title || 'ملاحظة بلا عنوان')}</h3><p>${escapeHTML(note.body || '')}</p><div class="note-card-footer"><span>${formatDate((note.updatedAt || '').slice(0, 10))}</span><span class="card-actions"><button class="mini-action" data-action="view-note" data-id="${escapeHTML(note.id)}" title="قراءة كاملة">◉</button><button class="mini-action" data-action="pin-note" data-id="${escapeHTML(note.id)}" title="${note.pinned ? 'إلغاء التثبيت' : 'تثبيت'}">${note.pinned ? '◆' : '◇'}</button><button class="mini-action" data-action="edit-note" data-id="${escapeHTML(note.id)}" title="تعديل">✎</button><button class="mini-action" data-action="delete-note" data-id="${escapeHTML(note.id)}" title="حذف">×</button></span></div></article>`).join('');
+    $('#page-notes').innerHTML = `${pageHeading('ذاكرتك الصغيرة', 'الملاحظات', 'احتفظ بالأفكار والملخصات المهمة، واعثر عليها بسرعة.', '<button class="btn" data-action="new-note">＋ ملاحظة جديدة</button>')}
+      <div class="toolbar"><label class="searchbar"><span>⌕</span><input id="noteSearch" type="search" placeholder="ابحث في عنوان أو محتوى الملاحظات..." value="${escapeHTML(notesQuery)}"></label><select class="field-select" id="notesSubjectFilter" aria-label="تصفية حسب المادة">${subjectOptions}</select><select class="field-select" id="notesCategoryFilter" aria-label="تصفية حسب التصنيف">${categoryOptions}</select></div>
+      ${notes.length ? `<div class="notes-grid">${cards}</div>` : emptyState('▤', notesQuery || notesSubjectFilter !== 'all' || notesCategoryFilter !== 'all' ? 'لا توجد نتائج' : 'لا توجد ملاحظات بعد', notesQuery || notesSubjectFilter !== 'all' || notesCategoryFilter !== 'all' ? 'جرّب تغيير البحث أو عوامل التصفية.' : 'أنشئ ملاحظة أولى، واجعل هذه المساحة مفيدة لك.', '<button class="btn" data-action="new-note">＋ أضف ملاحظة</button>')}`;
+  }
+
+  const TASK_FILTERS = [
+    { id: 'all', label: 'الكل' }, { id: 'overdue', label: 'متأخرة' }, { id: 'today', label: 'اليوم' }, { id: 'upcoming', label: 'قادمة' }, { id: 'done', label: 'منجزة' }
+  ];
+  function filterTasks(tasks) {
+    const today = todayISO();
+    if (taskFilter === 'overdue') return tasks.filter(task => !task.done && task.dueDate && task.dueDate < today);
+    if (taskFilter === 'today') return tasks.filter(task => !task.done && task.dueDate === today);
+    if (taskFilter === 'upcoming') return tasks.filter(task => !task.done && (!task.dueDate || task.dueDate > today));
+    if (taskFilter === 'done') return tasks.filter(task => task.done);
+    return tasks;
+  }
+  function renderTasks() {
+    let tasks = state.tasks;
+    if (taskSubjectFilter !== 'all') tasks = tasks.filter(task => task.subject === taskSubjectFilter);
+    tasks = sortedTasks(filterTasks(tasks));
+    const total = state.tasks.length;
+    const done = state.tasks.filter(task => task.done).length;
+    const percent = total ? Math.round(done / total * 100) : 0;
+    const filters = TASK_FILTERS.map(filter => `<button class="chip ${taskFilter === filter.id ? 'active' : ''}" data-task-filter="${filter.id}">${filter.label}${filter.id === 'overdue' ? ` (${state.tasks.filter(task => !task.done && task.dueDate && task.dueDate < todayISO()).length})` : ''}</button>`).join('');
+    const subjectOptions = `<option value="all">كل المواد</option>${SUBJECTS.map(subject => `<option value="${subject.id}" ${taskSubjectFilter === subject.id ? 'selected' : ''}>${subject.name}</option>`).join('')}`;
+    const list = tasks.map(task => `<div class="task-item"><input class="task-check" type="checkbox" data-action="toggle-task" data-id="${escapeHTML(task.id)}" ${task.done ? 'checked' : ''} aria-label="إنجاز المهمة"><div class="task-body"><div class="task-details"><h4 style="${task.done ? 'text-decoration:line-through;color:var(--muted)' : ''}">${escapeHTML(task.title)}</h4><small>${escapeHTML(subjectName(task.subject))} · ${PRIORITIES[task.priority] || 'عادية'}${task.description ? ` · ${escapeHTML(task.description)}` : ''}</small></div><div>${dueInfo(task)}</div></div><div class="task-item-actions"><button class="mini-action" data-action="edit-task" data-id="${escapeHTML(task.id)}" title="تعديل">✎</button><button class="mini-action" data-action="delete-task" data-id="${escapeHTML(task.id)}" title="حذف">×</button></div></div>`).join('');
+    $('#page-tasks').innerHTML = `${pageHeading('قائمة واضحة، ذهن أهدأ', 'قائمة المهام', 'حوّل ما عليك فعله إلى خطوات صغيرة قابلة للإنجاز.', '<button class="btn" data-action="new-task">＋ مهمة جديدة</button>')}
+      <div class="task-summary"><div><strong>${done}/${total}</strong><br><span>مهام مكتملة</span></div><div class="task-progress"><i style="width:${percent}%"></i></div><span>${percent}% إنجاز</span></div>
+      <div class="toolbar"><div class="filter-chips">${filters}</div><select class="field-select" id="taskSubjectFilter" aria-label="تصفية المهام حسب المادة">${subjectOptions}</select></div>
+      ${tasks.length ? `<div class="tasks-list">${list}</div>` : emptyState('✓', 'القائمة هادئة الآن', 'لا توجد مهام في هذا القسم. يمكنك إضافة مهمة جديدة أو اختيار قائمة أخرى.', '<button class="btn" data-action="new-task">＋ أضف مهمة</button>')}`;
+  }
+
+  function renderSubjects() {
+    const cards = SUBJECTS.map(subject => {
+      const notes = state.notes.filter(note => note.subject === subject.id).length;
+      const tasks = state.tasks.filter(task => task.subject === subject.id && !task.done).length;
+      return `<button class="subject-card" data-open-subject="${subject.id}" style="--subject-bg:${subject.color}"><span class="subject-emoji">${subject.icon}</span><strong>${subject.name}</strong><small>${notes} ملاحظات · ${tasks} مهام متبقية</small></button>`;
+    }).join('');
+    $('#page-subjects').innerHTML = `${pageHeading('مساحة كل مادة', 'موادي الدراسية', 'كل مادة لها صفحة مستقلة تجمع ملاحظاتها ومهامها في مكان واحد.')}
+      <div class="subject-grid">${cards}</div><div class="setting-note" style="margin-top:18px">💡 نصيحة صغيرة: بعد كل درس، أضف ملخصاً قصيراً ومهمة تطبيق واحدة. لا تجعل تدوين الملاحظات بديلاً عن حل التمارين.</div>`;
+  }
+  function renderSubjectPage() {
+    const subject = subjectFor(currentSubject);
+    const notes = sortedNotes(state.notes.filter(note => note.subject === currentSubject)).slice(0, 5);
+    const tasks = sortedTasks(state.tasks.filter(task => task.subject === currentSubject && !task.done)).slice(0, 6);
+    const allNotes = state.notes.filter(note => note.subject === currentSubject).length;
+    const allTasks = state.tasks.filter(task => task.subject === currentSubject).length;
+    $('#page-subject').innerHTML = `
+      <div class="page-heading"><div><div class="eyebrow">مساحة المادة</div><h1>${subject.name}</h1><p>ملاحظاتك ومهامك الخاصة بهذه المادة فقط.</p></div><button class="btn ghost" data-nav="subjects">← كل المواد</button></div>
+      <div class="subject-hero"><span class="subject-emoji" style="--subject-bg:${subject.color}">${subject.icon}</span><div><h1>${subject.name}</h1><p>${allNotes} ملاحظات · ${allTasks} مهام إجمالاً</p></div><div class="subject-hero-actions"><button class="btn small" data-action="new-note" data-subject="${subject.id}">＋ ملاحظة</button><button class="btn secondary small" data-action="new-task" data-subject="${subject.id}">＋ مهمة</button></div></div>
+      <div class="subject-content-grid">
+        <div class="panel"><div class="panel-title"><h3>ملاحظات ${subject.short}</h3><button class="text-link" data-action="show-subject-notes" data-subject="${subject.id}">عرض الكل ←</button></div>${notes.length ? notes.map(noteMini).join('') : emptyState('▤', 'لا توجد ملاحظات', 'أضف ملخص الدرس أو الأفكار المهمة.', `<button class="btn small" data-action="new-note" data-subject="${subject.id}">＋ ملاحظة</button>`)}</div>
+        <div class="panel"><div class="panel-title"><h3>مهام ${subject.short}</h3><button class="text-link" data-action="show-subject-tasks" data-subject="${subject.id}">عرض الكل ←</button></div>${tasks.length ? tasks.map(taskRow).join('') : emptyState('✓', 'لا توجد مهام معلقة', 'أضف خطوة تطبيق أو مراجعة قصيرة.', `<button class="btn small" data-action="new-task" data-subject="${subject.id}">＋ مهمة</button>`)}</div>
+      </div>`;
+  }
+  function renderSettings() {
+    $('#page-settings').innerHTML = `${pageHeading('بياناتك تبقى عندك', 'الإعدادات', 'تحكم في مظهر التطبيق واحتفظ بنسخة آمنة من بياناتك.')}
+      <div class="settings-grid">
+        <div class="setting-card"><h3>📦 النسخ الاحتياطي</h3><p>صدّر ملاحظاتك ومهامك في ملف JSON، أو استورد نسخة سابقة على هذا الجهاز.</p><div class="setting-actions"><button class="btn" id="exportData">تصدير JSON ↓</button><button class="btn secondary" id="importData">استيراد JSON ↑</button><input type="file" id="importFile" accept=".json,application/json" hidden></div><div class="setting-note">يُنصح بتصدير نسخة احتياطية دورياً، خصوصاً قبل تغيير المتصفح أو حذف بياناته. الاستيراد يدمج العناصر دون حذف بياناتك الحالية.</div></div>
+        <div class="setting-card"><h3>⏱️ جلسة التركيز</h3><p>خصّص وقت الدراسة والاستراحة بما يناسبك.</p><div class="about-row"><span>مدة التركيز</span><strong>${focusSettings.focusMinutes} دقيقة</strong></div><div class="about-row"><span>مدة الاستراحة</span><strong>${focusSettings.breakMinutes} دقائق</strong></div><div class="setting-actions" style="margin-top:12px"><button class="btn" id="focusSettingsOpen">تخصيص المؤقّت</button><button class="btn secondary" id="enableFocusNotifications">تفعيل إشعارات الهاتف</button></div></div>
+        <div class="setting-card"><h3>🌙 المظهر</h3><p>اختر الشكل الذي يريح عينيك أثناء الدراسة.</p><div class="setting-actions"><button class="btn secondary" data-set-theme="light">☀ الوضع النهاري</button><button class="btn secondary" data-set-theme="dark">☾ الوضع الليلي</button></div></div>
+        <div class="setting-card"><h3>🧾 مساحة التخزين</h3><p>يتم حفظ بياناتك داخل متصفح هذا الجهاز، ولا تُرسل إلى خادم خارجي.</p><div class="about-row"><span>الملاحظات</span><strong>${state.notes.length}</strong></div><div class="about-row"><span>المهام</span><strong>${state.tasks.length}</strong></div><div class="about-row"><span>الحفظ</span><strong>محلي على الجهاز</strong></div></div>
+        <div class="setting-card danger-zone"><h3>⚠ منطقة الحذف</h3><p>حذف جميع الملاحظات والمهام المخزنة محلياً. لا يمكن التراجع عن هذه الخطوة.</p><button class="btn danger" id="clearData">مسح جميع البيانات</button></div>
+      </div>
+      <div class="setting-note" style="margin-top:15px">ملاحظة تقنية: لكي يعمل التطبيق كتطبيق ويب قابل للتثبيت ويدعم وضع عدم الاتصال، افتحه عبر رابط HTTPS أو خادم محلي، ثم افتحه مرة واحدة بالإنترنت. فتح ملف HTML مباشرة يتيح الحفظ المحلي، لكن قد لا يفعّل Service Worker.</div>`;
+  }
+
+  function subjectSelect(value = '') {
+    return `<option value="">عام / غير مرتبط بمادة</option>${SUBJECTS.map(subject => `<option value="${subject.id}" ${value === subject.id ? 'selected' : ''}>${subject.name}</option>`).join('')}`;
+  }
+  function openModal(content, autoFocus = true) {
+    $('#modalRoot').innerHTML = `<div class="modal-backdrop" data-modal-backdrop><div class="modal" role="dialog" aria-modal="true">${content}</div></div>`;
+    const first = $('input:not([type=hidden]), textarea, select', $('#modalRoot'));
+    if (autoFocus && first) setTimeout(() => first.focus(), 30);
+  }
+  function closeModal() { $('#modalRoot').innerHTML = ''; }
+  function openQuickAdd() {
+    openModal(`<div class="modal-head"><h2>إضافة سريعة</h2><button class="modal-close" data-action="close-modal">×</button></div><p class="muted-copy" style="margin-bottom:15px">ما الذي تريد إضافته الآن؟</p><div class="content-grid"><button class="subject-card" data-action="new-note"><span class="subject-emoji">▤</span><strong>ملاحظة جديدة</strong><small>فكرة أو ملخص درس</small></button><button class="subject-card" data-action="new-task"><span class="subject-emoji" style="--subject-bg:#e5f7f0">✓</span><strong>مهمة جديدة</strong><small>خطوة تريد إنجازها</small></button></div>`);
+  }
+  function openNoteModal(note = null, subjectId = null) {
+    const editing = !!note;
+    const chosenSubject = note?.subject || subjectId || (currentPage === 'subject' ? currentSubject : '');
+    openModal(`<div class="modal-head"><h2>${editing ? 'تعديل الملاحظة' : 'ملاحظة جديدة'}</h2><button class="modal-close" data-action="close-modal">×</button></div>
+      <form id="noteForm" data-id="${escapeHTML(note?.id || '')}">
+        <div class="field"><label for="noteTitle">عنوان الملاحظة</label><input id="noteTitle" name="title" required maxlength="100" placeholder="مثلاً: قوانين الحركة" value="${escapeHTML(note?.title || '')}"></div>
+        <div class="field"><label for="noteBody">المحتوى</label><textarea id="noteBody" name="body" placeholder="اكتب الفكرة أو الملخص هنا...">${escapeHTML(note?.body || '')}</textarea></div>
+        <div class="form-grid"><div class="field"><label for="noteSubject">المادة</label><select id="noteSubject" name="subject">${subjectSelect(chosenSubject)}</select></div><div class="field"><label for="noteCategory">التصنيف</label><select id="noteCategory" name="category">${NOTE_CATEGORIES.map(category => `<option ${category === (note?.category || 'درس') ? 'selected' : ''}>${category}</option>`).join('')}</select></div></div>
+        <label class="form-check"><input type="checkbox" name="pinned" ${note?.pinned ? 'checked' : ''}> تثبيت الملاحظة في أعلى القائمة</label>
+        <div class="modal-actions"><button class="btn" type="submit">${editing ? 'حفظ التعديلات' : 'حفظ الملاحظة'}</button><button class="btn ghost" type="button" data-action="close-modal">إلغاء</button></div>
+      </form>`);
+  }
+  function openNoteReader(note) {
+    if (!note) return;
+    openModal(`<div class="modal-head"><h2>${escapeHTML(note.title || 'ملاحظة بلا عنوان')}</h2><button class="modal-close" data-action="close-modal">×</button></div><div class="note-reader-meta">${escapeHTML(subjectName(note.subject))} · ${escapeHTML(note.category || 'أخرى')} · آخر تحديث: ${formatDate((note.updatedAt || '').slice(0, 10))}</div><div class="note-reader-body ${note.body ? '' : 'note-reader-empty'}">${escapeHTML(note.body || 'لا يوجد محتوى مكتوب في هذه الملاحظة.')}</div><div class="modal-actions"><button class="btn" data-action="edit-note" data-id="${escapeHTML(note.id)}">✎ تعديل الملاحظة</button><button class="btn ghost" data-action="close-modal">إغلاق</button></div>`);
+    $('.modal').classList.add('note-reader-modal');
+  }
+  function openFocusSettings() {
+    openModal(`<div class="modal-head"><h2>تخصيص جلسة التركيز</h2><button class="modal-close" data-action="close-modal">×</button></div><p class="muted-copy" style="margin:-7px 0 15px">اختر مدة تناسب قدرتك على التركيز. يمكنك تعديلها في أي وقت.</p><form id="focusSettingsForm"><div class="form-grid"><div class="field"><label for="focusMinutes">مدة التركيز بالدقائق (1–120)</label><input id="focusMinutes" type="number" name="focusMinutes" min="1" max="120" required value="${focusSettings.focusMinutes}"></div><div class="field"><label for="breakMinutes">مدة الاستراحة بالدقائق (1–30)</label><input id="breakMinutes" type="number" name="breakMinutes" min="1" max="30" required value="${focusSettings.breakMinutes}"></div></div><label class="form-check"><input type="checkbox" name="notifyOnFinish" ${focusSettings.notifyOnFinish ? 'checked' : ''}> أرسل تنبيهًا عند انتهاء الجلسة</label><div class="modal-actions"><button class="btn" type="submit">حفظ الإعدادات</button><button class="btn secondary" type="button" id="enableFocusNotifications">تفعيل إشعارات الهاتف</button></div></form><div class="setting-note">سيظهر إشعار الهاتف عند انتهاء المؤقّت عندما تكون صلاحية الإشعارات مفعّلة. سيبقى التنبيه داخل التطبيق متاحًا أيضًا.</div>`, false);
+  }
+  function saveFocusSettings(form) {
+    const data = new FormData(form);
+    const focusMinutes = Number(data.get('focusMinutes'));
+    const breakMinutes = Number(data.get('breakMinutes'));
+    if (!Number.isInteger(focusMinutes) || focusMinutes < 1 || focusMinutes > 120 || !Number.isInteger(breakMinutes) || breakMinutes < 1 || breakMinutes > 30) { alert('مدة التركيز يجب أن تكون من 1 إلى 120 دقيقة، والاستراحة من 1 إلى 30 دقيقة.'); return; }
+    focusSettings = { focusMinutes, breakMinutes, notifyOnFinish: data.get('notifyOnFinish') === 'on' };
+    try { localStorage.setItem(FOCUS_SETTINGS_KEY, JSON.stringify(focusSettings)); } catch (_) {}
+    if (window.RedaAndroid?.cancelFocusNotification) window.RedaAndroid.cancelFocusNotification();
+    clearInterval(focusInterval); focusRunning = false; focusEndsAt = 0; focusSeconds = focusSettings.focusMinutes * 60;
+    closeModal(); renderCurrentPage(); updateTimerUI(); showToast('تم حفظ إعدادات جلسة التركيز');
+  }
+  function requestFocusNotifications() {
+    if (window.RedaAndroid?.requestNotificationPermission) {
+      window.RedaAndroid.requestNotificationPermission();
+      showToast('اختر «سماح» لتفعيل إشعارات انتهاء الجلسة');
+      return;
+    }
+    if ('Notification' in window) {
+      Notification.requestPermission().then(permission => showToast(permission === 'granted' ? 'تم تفعيل الإشعارات' : 'لم يتم تفعيل الإشعارات'));
+    } else { showToast('الإشعارات غير مدعومة على هذا الجهاز'); }
+  }
+  function openTaskModal(task = null, subjectId = null) {
+    const editing = !!task;
+    const chosenSubject = task?.subject || subjectId || (currentPage === 'subject' ? currentSubject : '');
+    openModal(`<div class="modal-head"><h2>${editing ? 'تعديل المهمة' : 'مهمة جديدة'}</h2><button class="modal-close" data-action="close-modal">×</button></div>
+      <form id="taskForm" data-id="${escapeHTML(task?.id || '')}">
+        <div class="field"><label for="taskTitle">المهمة</label><input id="taskTitle" name="title" required maxlength="120" placeholder="مثلاً: حل تمرين في الميكانيك" value="${escapeHTML(task?.title || '')}"></div>
+        <div class="field"><label for="taskDescription">تفاصيل (اختياري)</label><input id="taskDescription" name="description" maxlength="180" placeholder="ما الخطوة التالية؟" value="${escapeHTML(task?.description || '')}"></div>
+        <div class="form-grid"><div class="field"><label for="taskSubject">المادة</label><select id="taskSubject" name="subject">${subjectSelect(chosenSubject)}</select></div><div class="field"><label for="taskDue">تاريخ الاستحقاق</label><input id="taskDue" type="date" name="dueDate" value="${escapeHTML(task?.dueDate || '')}"></div></div>
+        <div class="field"><label for="taskPriority">الأولوية</label><select id="taskPriority" name="priority">${Object.entries(PRIORITIES).map(([key, label]) => `<option value="${key}" ${key === (task?.priority || 'medium') ? 'selected' : ''}>${label}</option>`).join('')}</select></div>
+        <label class="form-check"><input type="checkbox" name="done" ${task?.done ? 'checked' : ''}> تم إنجاز هذه المهمة</label>
+        <div class="modal-actions"><button class="btn" type="submit">${editing ? 'حفظ التعديلات' : 'إضافة إلى قائمة المهام'}</button><button class="btn ghost" type="button" data-action="close-modal">إلغاء</button></div>
+      </form>`);
+  }
+
+  function saveNote(form) {
+    const data = new FormData(form);
+    const id = form.dataset.id;
+    const existing = state.notes.find(note => note.id === id);
+    const now = new Date().toISOString();
+    const note = {
+      id: existing?.id || uid(), title: String(data.get('title') || '').trim(), body: String(data.get('body') || '').trim(),
+      subject: String(data.get('subject') || ''), category: String(data.get('category') || 'أخرى'), pinned: data.get('pinned') === 'on',
+      createdAt: existing?.createdAt || now, updatedAt: now
+    };
+    if (!note.title) return;
+    if (existing) state.notes = state.notes.map(item => item.id === id ? note : item);
+    else state.notes.push(note);
+    persist(); closeModal(); renderCurrentPage(); showToast(existing ? 'تم تحديث الملاحظة' : 'تم حفظ الملاحظة');
+  }
+  function saveTask(form) {
+    const data = new FormData(form);
+    const id = form.dataset.id;
+    const existing = state.tasks.find(task => task.id === id);
+    const now = new Date().toISOString();
+    const done = data.get('done') === 'on';
+    const task = {
+      id: existing?.id || uid(), title: String(data.get('title') || '').trim(), description: String(data.get('description') || '').trim(),
+      subject: String(data.get('subject') || ''), dueDate: String(data.get('dueDate') || ''), priority: String(data.get('priority') || 'medium'),
+      done, doneAt: done ? (existing?.done ? existing.doneAt : now) : null, createdAt: existing?.createdAt || now, updatedAt: now
+    };
+    if (!task.title) return;
+    if (existing) state.tasks = state.tasks.map(item => item.id === id ? task : item);
+    else state.tasks.push(task);
+    persist(); closeModal(); renderCurrentPage(); showToast(existing ? 'تم تحديث المهمة' : 'أُضيفت المهمة إلى قائمتك');
+  }
+  function toggleTask(id) {
+    const task = state.tasks.find(item => item.id === id);
+    if (!task) return;
+    task.done = !task.done;
+    task.doneAt = task.done ? new Date().toISOString() : null;
+    task.updatedAt = new Date().toISOString();
+    persist(); renderCurrentPage();
+    showToast(task.done ? 'أحسنت! مهمة أخرى أُنجزت ✓' : 'أُعيدت المهمة إلى القائمة');
+  }
+  function deleteNote(id) {
+    if (!confirm('هل تريد حذف هذه الملاحظة نهائياً؟')) return;
+    state.notes = state.notes.filter(note => note.id !== id);
+    persist(); renderCurrentPage(); showToast('تم حذف الملاحظة');
+  }
+  function deleteTask(id) {
+    if (!confirm('هل تريد حذف هذه المهمة نهائياً؟')) return;
+    state.tasks = state.tasks.filter(task => task.id !== id);
+    persist(); renderCurrentPage(); showToast('تم حذف المهمة');
+  }
+  function togglePin(id) {
+    const note = state.notes.find(item => item.id === id);
+    if (!note) return;
+    note.pinned = !note.pinned; note.updatedAt = new Date().toISOString();
+    persist(); renderCurrentPage(); showToast(note.pinned ? 'تم تثبيت الملاحظة' : 'تم إلغاء تثبيت الملاحظة');
+  }
+  function exportData() {
+    const backup = { app: 'Reda Note', version: 2, exportedAt: new Date().toISOString(), notes: state.notes, tasks: state.tasks, focusSettings };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a'); link.href = url; link.download = `reda-note-backup-${todayISO()}.json`; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+    showToast('تم تجهيز النسخة الاحتياطية');
+  }
+  function importData(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result));
+        if (!parsed || !Array.isArray(parsed.notes) || !Array.isArray(parsed.tasks)) throw new Error('invalid backup');
+        if (!confirm(`سيتم دمج ${parsed.notes.length} ملاحظات و${parsed.tasks.length} مهام مع بياناتك الحالية. هل تريد المتابعة؟`)) return;
+        const noteIds = new Set(state.notes.map(note => note.id));
+        const taskIds = new Set(state.tasks.map(task => task.id));
+        const validNotes = parsed.notes.filter(note => note && typeof note.title === 'string').map(note => ({
+          id: note.id && !noteIds.has(note.id) ? String(note.id) : uid(), title: String(note.title).slice(0, 100), body: String(note.body || ''),
+          subject: SUBJECTS.some(s => s.id === note.subject) ? note.subject : '', category: NOTE_CATEGORIES.includes(note.category) ? note.category : 'أخرى',
+          pinned: !!note.pinned, createdAt: note.createdAt || new Date().toISOString(), updatedAt: note.updatedAt || new Date().toISOString()
+        }));
+        const validTasks = parsed.tasks.filter(task => task && typeof task.title === 'string').map(task => ({
+          id: task.id && !taskIds.has(task.id) ? String(task.id) : uid(), title: String(task.title).slice(0, 120), description: String(task.description || '').slice(0, 180),
+          subject: SUBJECTS.some(s => s.id === task.subject) ? task.subject : '', dueDate: /^\d{4}-\d{2}-\d{2}$/.test(task.dueDate || '') ? task.dueDate : '',
+          priority: ['high', 'medium', 'low'].includes(task.priority) ? task.priority : 'medium', done: !!task.done, doneAt: task.doneAt || null,
+          createdAt: task.createdAt || new Date().toISOString(), updatedAt: task.updatedAt || new Date().toISOString()
+        }));
+        state.notes.push(...validNotes); state.tasks.push(...validTasks); persist();
+        if (parsed.focusSettings && typeof parsed.focusSettings === 'object') {
+          focusSettings = { focusMinutes: Math.min(120, Math.max(1, Number(parsed.focusSettings.focusMinutes) || 25)), breakMinutes: Math.min(30, Math.max(1, Number(parsed.focusSettings.breakMinutes) || 5)), notifyOnFinish: parsed.focusSettings.notifyOnFinish !== false };
+          try { localStorage.setItem(FOCUS_SETTINGS_KEY, JSON.stringify(focusSettings)); } catch (_) {}
+          focusSeconds = focusSettings.focusMinutes * 60;
+        }
+        renderCurrentPage(); showToast(`تم استيراد ${validNotes.length} ملاحظات و${validTasks.length} مهام`);
+      } catch (error) { alert('تعذر قراءة الملف. تأكد أنه نسخة JSON صادرة من Reda Note.'); }
+    };
+    reader.onerror = () => alert('تعذرت قراءة الملف.');
+    reader.readAsText(file);
+  }
+  function clearAllData() {
+    if (!confirm('هل أنت متأكد؟ سيتم حذف جميع الملاحظات والمهام من هذا الجهاز نهائياً.')) return;
+    if (!confirm('تأكيد أخير: هل صدّرت نسخة احتياطية إن كنت تحتاج بياناتك؟')) return;
+    state = freshState(); persist(); renderCurrentPage(); showToast('تم مسح البيانات المحلية');
+  }
+
+  function timerText() {
+    const minutes = Math.floor(focusSeconds / 60).toString().padStart(2, '0');
+    const seconds = (focusSeconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
+  function updateTimerUI() {
+    const display = $('#focusTimer');
+    const button = $('#focusToggle');
+    const subtitle = $('#focusSubtitle');
+    const count = $('#focusCount');
+    if (display) display.textContent = timerText();
+    if (button) button.textContent = focusRunning ? 'إيقاف مؤقت' : (focusSeconds < focusSettings.focusMinutes * 60 && focusSeconds > 0 ? 'استئناف' : 'ابدأ التركيز');
+    if (subtitle) subtitle.textContent = `${focusSettings.focusMinutes} دقيقة تركيز · ${focusSettings.breakMinutes} دقائق استراحة`;
+    if (count) count.textContent = `جلسات مكتملة: ${getFocusCount()}`;
+  }
+  function completeFocusSession() {
+    if (window.RedaAndroid?.cancelFocusNotification) window.RedaAndroid.cancelFocusNotification();
+    clearInterval(focusInterval); focusRunning = false; focusEndsAt = 0; focusSeconds = 0; updateTimerUI();
+    try { localStorage.setItem(FOCUS_COUNT_KEY, String(getFocusCount() + 1)); } catch (_) {}
+    showToast(`انتهت جلسة التركيز! أحسنت. خذ استراحة ${focusSettings.breakMinutes} دقائق 🌿`);
+    if (focusSettings.notifyOnFinish) {
+      const title = 'انتهت جلسة التركيز';
+      const body = `أحسنت! حان وقت استراحة لمدة ${focusSettings.breakMinutes} دقائق.`;
+      if (window.RedaAndroid?.showFocusNotification) window.RedaAndroid.showFocusNotification(title, body);
+      else if ('Notification' in window && Notification.permission === 'granted') new Notification(title, { body });
+    }
+    if (window.RedaAndroid?.vibrate) window.RedaAndroid.vibrate(450);
+    else if (navigator.vibrate) navigator.vibrate([180, 90, 180]);
+  }
+  function syncFocusRemaining() {
+    if (!focusRunning || !focusEndsAt) return;
+    focusSeconds = Math.max(0, Math.ceil((focusEndsAt - Date.now()) / 1000));
+    updateTimerUI();
+    if (focusSeconds <= 0) completeFocusSession();
+  }
+  function toggleFocus() {
+    if (focusRunning) {
+      syncFocusRemaining();
+      if (!focusRunning) return;
+      if (window.RedaAndroid?.cancelFocusNotification) window.RedaAndroid.cancelFocusNotification();
+      clearInterval(focusInterval); focusRunning = false; focusEndsAt = 0; updateTimerUI();
+      showToast('تم إيقاف جلسة التركيز مؤقتًا');
+      return;
+    }
+    if (focusSeconds <= 0) focusSeconds = focusSettings.focusMinutes * 60;
+    focusRunning = true;
+    focusEndsAt = Date.now() + focusSeconds * 1000;
+    if (focusSettings.notifyOnFinish && window.RedaAndroid?.scheduleFocusNotification) {
+      window.RedaAndroid.scheduleFocusNotification(focusSeconds * 1000);
+    }
+    focusInterval = setInterval(syncFocusRemaining, 250);
+    updateTimerUI();
+    showToast('بدأت جلسة التركيز. خطوة واحدة في كل مرة ✨');
+  }
+  function resetFocus() {
+    if (window.RedaAndroid?.cancelFocusNotification) window.RedaAndroid.cancelFocusNotification();
+    clearInterval(focusInterval); focusRunning = false; focusEndsAt = 0;
+    focusSeconds = focusSettings.focusMinutes * 60; updateTimerUI();
+    showToast('أُعيد ضبط المؤقّت');
+  }
+
+  document.addEventListener('click', event => {
+    const nav = event.target.closest('[data-nav]');
+    if (nav) { setPage(nav.dataset.nav); return; }
+    const openSubject = event.target.closest('[data-open-subject]');
+    if (openSubject) { setPage('subject', openSubject.dataset.openSubject); return; }
+    const actionEl = event.target.closest('[data-action]');
+    if (actionEl) {
+      const { action, id, subject } = actionEl.dataset;
+      if (action === 'close-modal') closeModal();
+      if (action === 'new-note') openNoteModal(null, subject || null);
+      if (action === 'new-task') openTaskModal(null, subject || null);
+      if (action === 'edit-note') openNoteModal(state.notes.find(note => note.id === id));
+      if (action === 'view-note') openNoteReader(state.notes.find(note => note.id === id));
+      if (action === 'edit-task') openTaskModal(state.tasks.find(task => task.id === id));
+      if (action === 'delete-note') deleteNote(id);
+      if (action === 'delete-task') deleteTask(id);
+      if (action === 'pin-note') togglePin(id);
+      if (action === 'show-subject-notes') { notesSubjectFilter = subject; notesCategoryFilter = 'all'; notesQuery = ''; setPage('notes'); }
+      if (action === 'show-subject-tasks') { taskSubjectFilter = subject; taskFilter = 'all'; setPage('tasks'); }
+      return;
+    }
+    const taskFilterButton = event.target.closest('[data-task-filter]');
+    if (taskFilterButton) { taskFilter = taskFilterButton.dataset.taskFilter; renderTasks(); return; }
+    const setTheme = event.target.closest('[data-set-theme]');
+    if (setTheme) { applyTheme(setTheme.dataset.setTheme); showToast('تم تغيير المظهر'); return; }
+    if (event.target.closest('#quickAdd')) { openQuickAdd(); return; }
+    if (event.target.closest('#themeToggle')) { applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); return; }
+    if (event.target.closest('#focusToggle')) { toggleFocus(); return; }
+    if (event.target.closest('#focusReset')) { resetFocus(); return; }
+    if (event.target.closest('#focusSettingsOpen')) { openFocusSettings(); return; }
+    if (event.target.closest('#enableFocusNotifications')) { requestFocusNotifications(); return; }
+    if (event.target.closest('#exportData')) { exportData(); return; }
+    if (event.target.closest('#importData')) { $('#importFile').click(); return; }
+    if (event.target.closest('#clearData')) { clearAllData(); return; }
+    if (event.target.matches('[data-modal-backdrop]')) closeModal();
+  });
+
+  document.addEventListener('change', event => {
+    const target = event.target;
+    if (target.matches('[data-action="toggle-task"]')) { toggleTask(target.dataset.id); return; }
+    if (target.id === 'notesSubjectFilter') { notesSubjectFilter = target.value; renderNotes(); return; }
+    if (target.id === 'notesCategoryFilter') { notesCategoryFilter = target.value; renderNotes(); return; }
+    if (target.id === 'taskSubjectFilter') { taskSubjectFilter = target.value; renderTasks(); return; }
+    if (target.id === 'importFile' && target.files?.[0]) { importData(target.files[0]); target.value = ''; }
+  });
+  document.addEventListener('input', event => {
+    if (event.target.id === 'noteSearch') {
+      const position = event.target.selectionStart;
+      notesQuery = event.target.value;
+      renderNotes();
+      const newInput = $('#noteSearch');
+      newInput.focus(); newInput.setSelectionRange(position, position);
+    }
+  });
+  document.addEventListener('submit', event => {
+    if (event.target.id === 'noteForm') { event.preventDefault(); saveNote(event.target); }
+    if (event.target.id === 'taskForm') { event.preventDefault(); saveTask(event.target); }
+    if (event.target.id === 'focusSettingsForm') { event.preventDefault(); saveFocusSettings(event.target); }
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && $('#modalRoot').innerHTML) closeModal();
+    if (event.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+      event.preventDefault(); setPage('notes'); setTimeout(() => $('#noteSearch')?.focus(), 50);
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) syncFocusRemaining(); });
+  window.addEventListener('pageshow', syncFocusRemaining);
+
+  function boot() {
+    initTheme(); renderSidebarSubjects();
+    $('#todayLabel').textContent = formatLongDate(new Date());
+    updateSidebarCounts(); setPage('home');
+  }
+  boot();
+})();
+
+  </script>
+</body>
+</html>
